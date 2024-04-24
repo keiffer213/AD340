@@ -1,0 +1,51 @@
+{
+  "expo": {
+    "name": "ExpoConfigDemo1",
+    "owner": "keiffer_tan",
+    "slug": "ExpoConfigDemo",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/custom_icon.png",
+    "userInterfaceStyle": "light",
+    "description": "This project mainly explores the properties of an expo application properties",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "host.keiffer.ExpoConfigDemo",
+      "icon": "./assets/custom_icon.png"
+    },
+    "android": {
+      "package": "com.keiffer.ExpoConfigDemo",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/custom_icon.png",
+        "backgroundColor": "#ffffff"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "privacy": "hidden",
+    "runtimeVersion": {
+      "policy": "nativeVersion"
+    },
+    "updates": {
+      "enabled": true,
+      "checkAutomatically": "WIFI_ONLY",
+      "fallbackToCacheTimeout": 30,
+      "url": "testurl.com",
+      "codeSigningCertificate": "example",
+      "codeSigningMetadata": {
+        "alg": "rsa-v1_5-sha256",
+        "keyid": "testetst"
+      },
+      "requestHeaders": {}
+    }
+  }
+}
