@@ -14,19 +14,19 @@ const item = recipe[index];
 
   return (
     <View style={styles.container}> 
-      <Text>Recipe Gallery!</Text>
+      <Text style={styles.listType}>Recipe Gallery!</Text>
 
-      <>
+      <View>
         {item ? <Item title={item.title} /> : <Text>No item found.</Text>}
-        <Text>ID: {item.id}</Text>
-        <Text>Title: {item.title}</Text>
-        <Text>Ingredients: {item.ingredients}</Text>
+        <Text style={styles.listType}>ID: {item.id}</Text>
+        <Text style={styles.listType}>Title: {item.title}</Text>
+        <Text style={styles.listType}>Ingredients: {item.ingredients}</Text>
         <Image 
           source={{ uri: item.image }}
           style={styles.image} 
         />
         {/* <Text>{item.image}</Text> */}
-      </>
+      </View>
 
       {/* the flatlist displayed all of the items in the recipe list */}
       {/* <FlatList 
@@ -41,12 +41,19 @@ const item = recipe[index];
 
 const styles = StyleSheet.create({
   container: {
-    flex: 0.25,
+    flex: 0.35,
   },
   image: {
     width: 200,  
     height: 200, 
-    resizeMode: 'cover'  
+    resizeMode: 'cover',
+    margin: 10,  
+  },
+  listType: {
+    margin: 10,
+  },  
+  miniContainer: {
+    backgroundColor: '#fff'
   },
 });
 
