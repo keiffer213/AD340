@@ -4,7 +4,7 @@ import React from 'react';
 import { ScrollView } from 'react-native-gesture-handler';
 
 interface Breed {
-  id: number;
+  id: string;
   type: string;
   attributes: {
     name: string,
