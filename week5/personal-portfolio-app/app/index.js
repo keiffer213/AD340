@@ -25,7 +25,7 @@ export default function index() {
 
   return (
     <View style={styles.container}>
-        <Text style={styles.headerText}>Keiffer's Purrtfolio</Text>
+        <Text style={styles.headerText}>Keiffer's Purrrtfolio</Text>
 
         <Image style={{marginTop: 20, marginBottom: 20}} source={require('../assets/tomo.jpg')}/>
         {selectedImage && <ImageViewer style={{height: 400, width:400}} imageUrls={selectedImage} />}
