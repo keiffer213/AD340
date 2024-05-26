@@ -1,92 +1,106 @@
+"use strict";
 // Asst2 -- Explorting Decorators in TypeScript
 // Keiffer Tan
-var __runInitializers = (this && this.__runInitializers) || function (thisArg, initializers, value) {
-    var useValue = arguments.length > 2;
-    for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-    }
-    return useValue ? value : void 0;
+var __decorate = (this && this.__decorate) || function (decorators, target, key, desc) {
+    var c = arguments.length, r = c < 3 ? target : desc === null ? desc = Object.getOwnPropertyDescriptor(target, key) : desc, d;
+    if (typeof Reflect === "object" && typeof Reflect.decorate === "function") r = Reflect.decorate(decorators, target, key, desc);
+    else for (var i = decorators.length - 1; i >= 0; i--) if (d = decorators[i]) r = (c < 3 ? d(r) : c > 3 ? d(target, key, r) : d(target, key)) || r;
+    return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
-var __esDecorate = (this && this.__esDecorate) || function (ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-    function accept(f) { if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected"); return f; }
-    var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-    var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-    var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-    var _, done = false;
-    for (var i = decorators.length - 1; i >= 0; i--) {
-        var context = {};
-        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-        context.addInitializer = function (f) { if (done) throw new TypeError("Cannot add initializers after decoration has completed"); extraInitializers.push(accept(f || null)); };
-        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-        if (kind === "accessor") {
-            if (result === void 0) continue;
-            if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-            if (_ = accept(result.get)) descriptor.get = _;
-            if (_ = accept(result.set)) descriptor.set = _;
-            if (_ = accept(result.init)) initializers.unshift(_);
-        }
-        else if (_ = accept(result)) {
-            if (kind === "field") initializers.unshift(_);
-            else descriptor[key] = _;
-        }
-    }
-    if (target) Object.defineProperty(target, contextIn.name, descriptor);
-    done = true;
+var __metadata = (this && this.__metadata) || function (k, v) {
+    if (typeof Reflect === "object" && typeof Reflect.metadata === "function") return Reflect.metadata(k, v);
 };
-var __setFunctionName = (this && this.__setFunctionName) || function (f, name, prefix) {
-    if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
-    return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
-};
+//Need to do "tsc -p tsconfig.json" in the proper directory
+//Then do a "node decoratorSimpleLogger.js"
 // Part 1 -- Creating a Class Decorator
 function SimpleLogger(constructor) {
-    console.log("Class created: ".concat(constructor.name, " --from decorator!"));
+    console.log(`Class created: ${constructor.name} --from decorator!`);
 }
 // function SimpleLogger(constructor: any) {
 //     console.log(`Class created: ${constructor.name} --from decorator!!`);  
 // }
 // Part 2 -- Method and Accessor Decorators
+// Method Decorator
 function LogMethod(target, propertyKey, descriptor) {
-    var originalMethod = descriptor.value;
-    descriptor.value = function () {
-        var args = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            args[_i] = arguments[_i];
-        }
-        console.log("Method ".concat(propertyKey, " called"));
+    const originalMethod = descriptor.value;
+    descriptor.value = function (...args) {
+        console.log(`Method ${propertyKey} called with args: ${args.join(', ')}`);
         return originalMethod.apply(this, args);
     };
     return descriptor;
 }
-var MyTestClass = function () {
-    var _classDecorators = [SimpleLogger];
-    var _classDescriptor;
-    var _classExtraInitializers = [];
-    var _classThis;
-    var _instanceExtraInitializers = [];
-    var _myMethod_decorators;
-    var MyTestClass = _classThis = /** @class */ (function () {
-        function MyTestClass_1() {
-            __runInitializers(this, _instanceExtraInitializers);
-            console.log('MyClass instance Created! --from constructor');
-        }
-        MyTestClass_1.prototype.myMethod = function (arg) {
-            return "Argument received: ".concat(arg);
-        };
-        return MyTestClass_1;
-    }());
-    __setFunctionName(_classThis, "MyTestClass");
-    (function () {
-        var _metadata = typeof Symbol === "function" && Symbol.metadata ? Object.create(null) : void 0;
-        _myMethod_decorators = [LogMethod];
-        __esDecorate(_classThis, null, _myMethod_decorators, { kind: "method", name: "myMethod", static: false, private: false, access: { has: function (obj) { return "myMethod" in obj; }, get: function (obj) { return obj.myMethod; } }, metadata: _metadata }, null, _instanceExtraInitializers);
-        __esDecorate(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-        MyTestClass = _classThis = _classDescriptor.value;
-        if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-        __runInitializers(_classThis, _classExtraInitializers);
-    })();
-    return MyTestClass = _classThis;
-}();
+// Acessor Decorator
+function MyReadOnly(target, propertyKey, descriptor) {
+    descriptor.set = function () {
+        throw new Error(`Cannot set value of ${propertyKey}. It is read-only.`);
+    };
+    return descriptor;
+}
+// Another Accessor Decorator Using the following source:
+//  https://www.typescriptlang.org/docs/handbook/decorators.html#accessor-decorators
+function configurable(value) {
+    return function (target, propertyKey, descriptor) {
+        descriptor.configurable = value;
+    };
+}
+let MyTestClass = class MyTestClass {
+    constructor() {
+        this._var1 = 'private_var1';
+        this.var2 = 'public_var2';
+        this._var3 = 5;
+        console.log('MyClass instance Created! --from constructor');
+    }
+    myMethod(arg) {
+        return `Argument received: ${arg}`;
+    }
+    get var1() {
+        return this._var1;
+    }
+    get var3() {
+        return this._var3;
+    }
+};
+__decorate([
+    LogMethod,
+    __metadata("design:type", Function),
+    __metadata("design:paramtypes", [String]),
+    __metadata("design:returntype", void 0)
+], MyTestClass.prototype, "myMethod", null);
+__decorate([
+    MyReadOnly,
+    __metadata("design:type", String),
+    __metadata("design:paramtypes", [])
+], MyTestClass.prototype, "var1", null);
+__decorate([
+    configurable(false),
+    __metadata("design:type", Number),
+    __metadata("design:paramtypes", [])
+], MyTestClass.prototype, "var3", null);
+MyTestClass = __decorate([
+    SimpleLogger,
+    __metadata("design:paramtypes", [])
+], MyTestClass);
 // For testing the output
-var myTestInstance = new MyTestClass();
-myTestInstance.myMethod('text');
+const myTestInstance = new MyTestClass();
+let testString = myTestInstance.myMethod('test text');
+console.log(testString);
+// console.log("Var2:", myTestInstance.var2);
+console.log("Var1:", myTestInstance.var1, "Var2:", myTestInstance.var2, "Var3: ", myTestInstance.var3);
+// (myTestInstance as any).var1 = "new value"; // just this gives me an error when trying to compile
+// (myTestInstance as any).var3 = 3;
+// try {
+//     Object.defineProperty(myTestInstance, 'var3', {
+//         configurable: true,
+//         value: 15
+//     });
+// } catch (error) {
+//     console.error("Error when trying to redefine var3:", error.message);
+// }
+// Attempt to modify the value accessor should fail
+try {
+    myTestInstance.var1 = "new value"; // This line should cause an error
+}
+catch (error) {
+    console.error(error.message); // output "Cannot set value of var1. It is read-only."
+}
+console.log("Var1:", myTestInstance.var1, "Var2:", myTestInstance.var2, "Var3: ", myTestInstance.var3);
