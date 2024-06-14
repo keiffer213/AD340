@@ -10,7 +10,7 @@ const Form = ({ onSubmit, initialData = { name: '', email: '', role: '' , showEm
   const [showEmployee, setShowEmployee] = useState(initialData.showEmployee)
 
   const handleSubmit = () => {
-    onSubmit({ name: name, email: email, role: role });
+    onSubmit({ name: name, email: email, role: role.toUpperCase() });
     // onSubmit({ id: id, name: name, email: email, role: role });
     setName('');
     setEmail('');

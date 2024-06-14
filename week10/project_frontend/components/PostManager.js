@@ -11,49 +11,33 @@ const EmployeeManager = ({ queryClient }) => {
   const [employeeId, setEmployeeId] = useState('');
   const [employeeRole, setEmployeeRole] = useState('');
   const [editEmployee, setEditEmployee] = useState(null);
+  
+  // const patchEmployee = async ({ id, role }) => {
+  //   const response = await fetch(`${URL}/users/${id}`, {
+  //     method: 'PATCH',
+  //     headers: { 'Content-Type': 'application/json' },
+  //     body: JSON.stringify({ role }),
+  //   });
+  //   if (!response.ok) throw new Error('Failed to patch post');
+  //   return response.json();
+  // };
 
-  const fetchEmployee = async (userId) => {
-    const response = await fetch(`${URL}/users${userId ? `/${userId}` : ''}`);
-    if (!response.ok) throw new Error('Failed to fetch employee');
-    return response.json();
-  };
-  
-  const updateEmployee = async (updatedEmployee) => {
-    const response = await fetch(`${URL}/users/${updatedEmployee.id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(updatedEmployee),
-    });
-    if (!response.ok) throw new Error('Failed to update post');
-    return response.json();
-  };
-  
-  const patchEmployee = async ({ id, role }) => {
-    const response = await fetch(`${URL}/users/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ role }),
-    });
-    if (!response.ok) throw new Error('Failed to patch post');
+  const fetchEmployee = async (id, role) => {
+    const urlFetchId = `${URL}/users${role ? `?role=${role.toUpperCase()}` : ''}`;
+
+    // **FOR some reason I can't fetch a single employee by id
+    // const urlFetchRole = `${URL}/users${id ? `/${id}` : ''}`;
+    // console.log(URLfetch);
+    const response = await fetch(urlFetchId);
+    if (!response.ok) {throw new Error('Failed to fetch employee');}
     return response.json();
   };
 
   // const queryClient = useQueryClient();
   const { data, error, isLoading } = useQuery({
-    queryKey: ['users', employeeId],
-    queryFn: () => fetchEmployee(employeeId),
-  });
- 
-  const updateMutation = useMutation({
-    mutationKey: ['users'],
-    mutationFn: updateEmployee,
-    onSuccess: () => queryClient.invalidateQueries(['users']),
-  });
-
-  const patchMutation = useMutation({
-    mutationKey: ['users'],
-    mutationFn: patchEmployee,
-    onSuccess: () => queryClient.invalidateQueries(['users']),
+    queryKey: ['users', employeeId, employeeRole],
+    queryFn: () => fetchEmployee(employeeId, employeeRole),
+    // enabled: !employeeId,
   });
 
   const deleteEmployeeMutation = useMutation({
@@ -74,18 +58,48 @@ const EmployeeManager = ({ queryClient }) => {
     deleteEmployeeMutation.mutate(deleteEm);
   }
 
+  const updateEmployee = async (updatedEmployee) => {
+    const response = await fetch(`${URL}/users/${updatedEmployee.id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(updatedEmployee),
+    });
+    if (!response.ok) throw new Error('Failed to update post');
+    return response.json();
+  };
+
+  const updateMutation = useMutation({
+    mutationKey: ['users'],
+    mutationFn: updateEmployee,
+    onSuccess: () => queryClient.invalidateQueries(['users']),
+  });
+
+  // const patchMutation = useMutation({
+  //   mutationKey: ['users'],
+  //   mutationFn: patchEmployee,
+  //   onSuccess: () => queryClient.invalidateQueries(['users']),
+  // });
+
   //update post
   const handleUpdate = (data) => {
     updateMutation.mutate({ id: editEmployee.id, ...data });
-    console.log("handleUpdate success!")
+    // console.log("handleUpdate success!")
     setEditEmployee(null);
   };
 
-  // ensure only the title of a post i updated
-  const handlePatch = (data) => {
-    patchMutation.mutate({ id: editEmployee.id, title: data.title });
-    console.log("handlePatch success!")
-    setEditEmployee(null);
+  // // ensure only the title of a post i updated
+  // const handlePatch = (data) => {
+  //   patchMutation.mutate({ id: editEmployee.id, title: data.title });
+  //   console.log("handlePatch success!")
+  //   setEditEmployee(null);
+  // };
+
+  const handleSubmit = (data) => {
+    // if (editEmployee.id !== data.id && editEmployee.role !== data.role) {
+    //   handlePatch(data);
+    // } else {
+      handleUpdate(data);
+    // }
   };
 
   const renderItem = ({ item }) => (
@@ -106,24 +120,16 @@ const EmployeeManager = ({ queryClient }) => {
     </View>
   );
 
-  const handleSubmit = (data) => {
-    if (editEmployee.id !== data.id && editEmployee.role !== data.role) {
-      handlePatch(data);
-    } else {
-      handleUpdate(data);
-    }
-  };
-
   return (
     <View style={styles.container}>
       <Text style={{ fontSize: 20, fontWeight: 'bold' }}>Filter</Text>
       <View style={{ flexDirection: 'row' }}>
-        <TextInput placeholder="Employee ID" value={employeeId} onChangeText={setEmployeeId} style={[styles.input, styles.halfWidth]} />
+        {/* <TextInput placeholder="Employee ID" value={employeeId} onChangeText={setEmployeeId} style={[styles.input, styles.halfWidth]} /> */}
         <TextInput placeholder="Employee Role" value={employeeRole} onChangeText={setEmployeeRole} style={[styles.input, styles.halfWidth]} />
       </View>
-      <Pressable style={styles.button} onPress={() => queryClient.invalidateQueries(['users'])}>
+      {/* <Pressable style={styles.button} onPress={() => queryClient.invalidateQueries(['users'])}>
         <Text style={styles.buttonText}>Filter</Text>
-      </Pressable>
+      </Pressable> */}
       {editEmployee && (
         <Form
           onSubmit={handleSubmit}
