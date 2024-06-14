@@ -74,26 +74,6 @@ const EmployeeManager = ({ queryClient }) => {
     deleteEmployeeMutation.mutate(deleteEm);
   }
 
-  // const deleteEmployeeMutation = async (id) => {
-  //   const res = await fetch(`${URL}/users/${id}`, {
-  //     method: 'DELETE',
-  //   });
-  
-  //   if (!res.ok) throw new Error('Failed to delete post');
-  //   return res.json();
-  // }
-
-  // const handleDeleteMutation = useMutation({
-  //   mutationKey: ['users'],
-  //   mutationFn: deleteEmployeeMutation,
-  //   onError: (error) => {
-  //     Alert.alert('Error', error.message);
-  //   },
-  //   onSuccess: () => {
-  //     queryClient.invalidateQueries(['users']);
-  //   },
-  // });
-
   //update post
   const handleUpdate = (data) => {
     updateMutation.mutate({ id: editEmployee.id, ...data });
